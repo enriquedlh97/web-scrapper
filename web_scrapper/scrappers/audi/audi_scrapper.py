@@ -2,7 +2,6 @@ import logging
 import re
 from typing import Iterable
 
-from dotenv import load_dotenv
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -157,8 +156,6 @@ def get_all_offers(
 
 
 def scrape_audi(driver: WebDriver, url: str = AUDI_URL) -> list[Offer]:
-    logging.info("Loading ENV variables")
-    load_dotenv()
     driver.get(url)
     close_cookie_banner(driver)
     years, styles, models = build_data(driver)
