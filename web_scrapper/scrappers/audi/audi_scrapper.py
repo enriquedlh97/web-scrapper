@@ -125,7 +125,7 @@ def get_all_offers(
     ), "Did not find the correct number of models"
 
     offers_data: list[Offer] = []
-    for model_idx in range(3):  # range(expected_models_count):
+    for model_idx in range(expected_models_count):
         model_name: str = all_models[model_idx].find_element(By.TAG_NAME, "h5").text
         logging.info(f"Getting all offers for: {model_name}")
 
