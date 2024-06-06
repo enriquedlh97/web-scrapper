@@ -1,8 +1,6 @@
 import json
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from web_scrapper.scrappers.audi.audi_scrapper import scrape_audi
 from web_scrapper.scrappers.audi.models_library import Offer
 from web_scrapper.scrappers.utils import setup_driver
@@ -17,7 +15,6 @@ def save_data(
 
 
 def main() -> None:
-    load_dotenv()
     offers: list[Offer] = scrape_audi(setup_driver())
     save_data(offers)
 

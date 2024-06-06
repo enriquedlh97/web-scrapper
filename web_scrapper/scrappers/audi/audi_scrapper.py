@@ -1,42 +1,21 @@
 import re
-from copy import copy
 from typing import Final, Iterable
 
-from selenium.common.exceptions import StaleElementReferenceException
+from dotenv import load_dotenv
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from tenacity import retry, stop_after_attempt, wait_fixed
 
+from web_scrapper.scrappers.audi.extractor_agent.offer_extractor_agent import \
+    extract_offer_info
 from web_scrapper.scrappers.audi.models_library import (BodyStyles, Models,
                                                         Offer, OfferSettings,
                                                         Years, build_data)
-from web_scrapper.scrappers.audi.offer_extractor_agent import \
-    extract_offer_info
+from web_scrapper.scrappers.utils import close_cookie_banner
 
 URL: Final[
     str
 ] = "https://www.audigainesville.com/global-incentives-search/index.htm?ddcref=tier1_offers"
-MAKE: Final[str] = "Audi"
-CONDITION: Final[None] = None
-TYPE: Final[None] = None
-
-
-def close_cookie_banner(driver: WebDriver) -> None:
-    try:
-        # Locate the close button element
-        close_button = driver.find_element(
-            By.CSS_SELECTOR,
-            "button.ca-button.ca-secondary-button.ca-secondary-button-first.go241155495.ca-button-opt-in",
-        )
-
-        # Click the close button to dismiss the banner
-        close_button.click()
-        # print("Cookie banner closed.")
-    except Exception:
-        # If there is any error, print the exception
-        # print("Failed to close cookie banner")
-        pass
 
 
 def get_offers(model: WebElement, driver: WebDriver) -> list[OfferSettings]:
@@ -131,7 +110,7 @@ def get_all_offers(
     assert len(all_models) == expected_models_count
 
     offers_data: list[Offer] = []
-    for model_idx in range(5):  # range(expected_models_count):
+    for model_idx in range(3):  # range(expected_models_count):
         model_name: str = all_models[model_idx].find_element(By.TAG_NAME, "h5").text
 
         offer: Offer = Offer(
@@ -162,6 +141,7 @@ def get_all_offers(
 
 
 def scrape_audi(driver: WebDriver, url: str = URL) -> list[Offer]:
+    load_dotenv()
     driver.get(url)
     close_cookie_banner(driver)
     years, styles, models = build_data(driver)
