@@ -7,7 +7,7 @@ readme = "README.md"
 
 
 packages = [
-    { include = "web-scrapper" }
+    { include = "web_scrapper" }
 ]
 
 [tool.poetry.dependencies]
