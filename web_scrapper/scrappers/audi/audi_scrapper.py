@@ -22,8 +22,26 @@ CONDITION: Final[None] = None
 TYPE: Final[None] = None
 
 
+def close_cookie_banner(driver: WebDriver) -> None:
+    try:
+        # Locate the close button element
+        close_button = driver.find_element(
+            By.CSS_SELECTOR,
+            "button.ca-button.ca-secondary-button.ca-secondary-button-first.go241155495.ca-button-opt-in",
+        )
+
+        # Click the close button to dismiss the banner
+        close_button.click()
+        # print("Cookie banner closed.")
+    except Exception:
+        # If there is any error, print the exception
+        # print("Failed to close cookie banner")
+        pass
+
+
 def get_offers(model: WebElement, driver: WebDriver) -> list[OfferSettings]:
     model.find_element(By.XPATH, "a[2]").click()
+    close_cookie_banner(driver)
     main_content: WebElement = driver.find_element(
         By.CLASS_NAME, "ddc-wrapper"
     ).find_element(By.XPATH, "div[2]")
@@ -113,7 +131,7 @@ def get_all_offers(
     assert len(all_models) == expected_models_count
 
     offers_data: list[Offer] = []
-    for model_idx in range(expected_models_count):
+    for model_idx in range(5):  # range(expected_models_count):
         model_name: str = all_models[model_idx].find_element(By.TAG_NAME, "h5").text
 
         offer: Offer = Offer(
@@ -138,11 +156,14 @@ def get_all_offers(
 
         assert len(all_models) == expected_models_count
 
+        close_cookie_banner(driver)
+
     return offers_data
 
 
 def scrape_audi(driver: WebDriver, url: str = URL) -> list[Offer]:
     driver.get(url)
+    close_cookie_banner(driver)
     years, styles, models = build_data(driver)
     offers: list[Offer] = get_all_offers(
         driver, years, styles, models, get_models_count(driver)
