@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from pathlib import Path
 
 from web_scrapper.scrappers.audi.audi_scrapper import scrape_audi
@@ -18,7 +19,11 @@ def save_data(
 
 
 def main() -> None:
+    start_time: float = time.time()
     offers: list[Offer] = scrape_audi(setup_driver())
+    end_time: float = time.time()
+    execution_time_minutes: float = (end_time - start_time) / 60
+    logging.info(f"Execution time: {execution_time_minutes:.2f} minutes")
     save_data(offers)
 
 
