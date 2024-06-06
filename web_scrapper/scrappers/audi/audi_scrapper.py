@@ -14,6 +14,14 @@ CONDITION: Final[None] = None
 TYPE: Final[None] = None
 
 
+def get_offers(model: WebElement, driver: WebDriver):
+    model.find_element(By.XPATH, "a[2]").click()
+    main_content: WebElement = driver.find_element(
+        By.CLASS_NAME, "ddc-wrapper"
+    ).find_element(By.XPATH, "div[2]")
+    print("")
+
+
 def extract_pattern_from_string(
     patterns: Iterable[int | str], input_string: str
 ) -> str | None:
@@ -52,7 +60,7 @@ def get_all_models(
     styles: BodyStyles,
     models: Models,
     expected_models_count: int | None = None,
-):
+) -> list[dict[str, str | int | None | dict]]:
     all_models: list[WebElement] = driver.find_element(
         By.CLASS_NAME, "vehicles-container"
     ).find_elements(By.CLASS_NAME, "vehicle-container")
@@ -60,9 +68,9 @@ def get_all_models(
     if expected_models_count:
         assert len(all_models) == expected_models_count
 
-    output_data: dict = {}
-    for model in all_models:
-        model_data: dict[str, str | int | None] = {}
+    output_data: list[dict] = []
+    for model in all_models[1:]:
+        model_data: dict[str, str | int | None | dict] = {}
 
         model_name: str = model.find_element(By.TAG_NAME, "h5").text
         model_data["audience_model"] = model_name
@@ -74,11 +82,14 @@ def get_all_models(
         model_data["condition"] = CONDITION
         model_data["type"] = TYPE
 
-        print("")
+        get_offers(model, driver)
+
+        output_data.append(model_data)
+    return output_data
 
 
 def scrape_audi(driver: WebDriver, url: str = URL):
     driver.get(url)
     years, styles, models = build_data(driver)
-    get_all_models(driver, years, styles, models, get_models_count(driver))
+    data = get_all_models(driver, years, styles, models, get_models_count(driver))
     print("")
