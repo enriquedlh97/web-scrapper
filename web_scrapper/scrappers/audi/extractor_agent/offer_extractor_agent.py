@@ -60,14 +60,18 @@ class OfferExtractor:
         self.total_cumulative_cost_of_usage += extarction_cost
 
 
-def extract_offer_info(offer: str, offer_type: str) -> OfferSettings:
+extractor: OfferExtractor = OfferExtractor(
+    model_name=LLM_MODEL_NAME,
+    system_message_prompt=system_message_string,
+    human_message_prompt_template=human_message_prompt_template_string,
+)
+
+
+def extract_offer_info(
+    offer: str, offer_type: str, offer_extractor: OfferExtractor = extractor
+) -> OfferSettings:
     offer_input: OfferExtractionInput = OfferExtractionInput(
         offer=offer, offer_type=offer_type.split("_")[0]
     )
-    offer_extarctor: OfferExtractor = OfferExtractor(
-        model_name=LLM_MODEL_NAME,
-        system_message_prompt=system_message_string,
-        human_message_prompt_template=human_message_prompt_template_string,
-    )
 
-    return offer_extarctor.extract(offer_input)
+    return offer_extractor.extract(offer_input)
