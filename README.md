@@ -21,17 +21,22 @@ poetry shell
 
 4. Install dependencies
 ```bash
-poetry shell
+poetry install
 ```
 
-5. Install `chromedriver`
+5. Install pre-commit
+```bash
+poetry run pre-commit install
+```
 
-6.  Create a `.env` file at the root of the repository and add your OPENAI API KEY
+6. Install `chromedriver`
+
+7.  Create a `.env` file at the root of the repository and add your OPENAI API KEY
 ```.env
 OPENAI_API_KEY=<your-api-key>
 ```
 
-7. Run the `main.py` script:
+8. Run the `main.py` script:
 ```bash
 poetry run python main.py
 ```
