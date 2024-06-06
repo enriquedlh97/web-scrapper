@@ -1,21 +1,25 @@
 import re
 from typing import Final, Iterable
-from selenium.webdriver.common.by import By
+
+from scrappers.audi.models_library import BodyStyles, Models, Years, build_data
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from scrappers.audi.models_library import Years, build_data, BodyStyles, Models
 
-
-URL: Final[str] = "https://www.audigainesville.com/global-incentives-search/index.htm?ddcref=tier1_offers"
+URL: Final[
+    str
+] = "https://www.audigainesville.com/global-incentives-search/index.htm?ddcref=tier1_offers"
 MAKE: Final[str] = "Audi"
 AUDIENCE_MODEL: Final[None] = None
 CONDITION: Final[None] = None
 TYPE: Final[None] = None
 
 
-def extract_pattern_from_string(patterns: Iterable[int | str], input_string: str) -> str | None:
+def extract_pattern_from_string(
+    patterns: Iterable[int | str], input_string: str
+) -> str | None:
     patterns_str = "|".join(map(str, patterns))
-    match: re.Match[str] | None = re.search(rf'\b({patterns_str})\b', input_string)
+    match: re.Match[str] | None = re.search(rf"\b({patterns_str})\b", input_string)
     if match:
         matched_value: str = match.group(1)
         return matched_value
@@ -32,15 +36,26 @@ def extract_trim_from_string(styles: BodyStyles, input_string: str) -> str | Non
 
 
 def get_models_count(driver: WebDriver) -> int:
-    return int(driver.find_element(By.CLASS_NAME, "incentives-header").find_element(By.ID, "results-count").text)
+    return int(
+        driver.find_element(By.CLASS_NAME, "incentives-header")
+        .find_element(By.ID, "results-count")
+        .text
+    )
 
 
-def get_all_models(driver: WebDriver, years: Years, styles: BodyStyles, models: Models, expected_models_count: int | None = None):
-    all_models: list[WebElement] = driver.find_element(By.CLASS_NAME, "vehicles-container").find_elements(By.CLASS_NAME, "vehicle-container")
+def get_all_models(
+    driver: WebDriver,
+    years: Years,
+    styles: BodyStyles,
+    models: Models,
+    expected_models_count: int | None = None,
+):
+    all_models: list[WebElement] = driver.find_element(
+        By.CLASS_NAME, "vehicles-container"
+    ).find_elements(By.CLASS_NAME, "vehicle-container")
 
     if expected_models_count:
         assert len(all_models) == expected_models_count
-
 
     output_data: dict = {}
     for model in all_models:

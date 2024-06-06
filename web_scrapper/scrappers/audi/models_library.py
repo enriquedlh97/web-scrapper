@@ -1,10 +1,11 @@
 from typing import Callable, TypeVar
+
 from pydantic import BaseModel
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class Years(BaseModel):
@@ -27,7 +28,9 @@ def get_li_elements_from_div(sidebar: WebElement, div_number: int):
     return li_elements
 
 
-def get_items_from_div(sidebar: WebElement, div_number: int, converter: Callable[[str], T]) -> list[T]:
+def get_items_from_div(
+    sidebar: WebElement, div_number: int, converter: Callable[[str], T]
+) -> list[T]:
     li_elements = get_li_elements_from_div(sidebar, div_number)
     return [converter(li.text) for li in li_elements]
 

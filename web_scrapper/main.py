@@ -1,5 +1,5 @@
-from scrappers.utils import setup_driver
 from scrappers.audi.audi_scrapper import scrape_audi
+from scrappers.utils import setup_driver
 
 
 def main() -> None:
