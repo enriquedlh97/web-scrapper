@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Callable, TypeVar
 
 from pydantic import BaseModel
@@ -6,6 +7,23 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
 T = TypeVar("T")
+
+
+class OfferSettings(BaseModel):
+    payment: float | None
+    payment_label: str | None
+    term: int | None
+    down_payment: float | None
+    down_payment_label: str | None
+    expiration: date
+    price: str | None
+    disclaimer: str
+    apr: str
+    name: str | None
+    amount: float | None
+    free_text: str | None
+    vin: str | None
+    msrp: float | None
 
 
 class Years(BaseModel):

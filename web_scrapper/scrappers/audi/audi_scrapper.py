@@ -1,7 +1,9 @@
 import re
 from typing import Final, Iterable
 
-from scrappers.audi.models_library import BodyStyles, Models, Years, build_data
+from scrappers.audi.models_library import (BodyStyles, Models, OfferSettings,
+                                           Years, build_data)
+from scrappers.audi.offer_extractor_agent import extract_offer_info
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -14,12 +16,32 @@ CONDITION: Final[None] = None
 TYPE: Final[None] = None
 
 
-def get_offers(model: WebElement, driver: WebDriver):
+def get_offers(model: WebElement, driver: WebDriver) -> list[OfferSettings]:
     model.find_element(By.XPATH, "a[2]").click()
     main_content: WebElement = driver.find_element(
         By.CLASS_NAME, "ddc-wrapper"
     ).find_element(By.XPATH, "div[2]")
+
+    offers: dict[str, list[WebElement]] = {
+        "finance_offers": main_content.find_element(
+            By.CSS_SELECTOR, 'section[data-offer="APR"]'
+        ).find_elements(By.TAG_NAME, "article"),
+        "promotion_offers": main_content.find_element(
+            By.CSS_SELECTOR, 'section[data-offer="PROMOTION"]'
+        ).find_elements(By.TAG_NAME, "article"),
+    }
+
+    for offer_type, offers_list in offers.items():
+        if not offers_list:
+            continue
+
+        for offer in offers_list:
+            parsed_offer: OfferSettings = extract_offer_info(offer.text)
+        print("")
+
     print("")
+
+    return []
 
 
 def extract_pattern_from_string(
