@@ -10,7 +10,6 @@ URL: Final[
     str
 ] = "https://www.audigainesville.com/global-incentives-search/index.htm?ddcref=tier1_offers"
 MAKE: Final[str] = "Audi"
-AUDIENCE_MODEL: Final[None] = None
 CONDITION: Final[None] = None
 TYPE: Final[None] = None
 
@@ -33,6 +32,10 @@ def extract_year_from_string(years: Years, input_string: str) -> int | None:
 
 def extract_trim_from_string(styles: BodyStyles, input_string: str) -> str | None:
     return extract_pattern_from_string(styles.available_styles, input_string)
+
+
+def extract_model_from_string(models: Models, input_string: str) -> str | None:
+    return extract_pattern_from_string(models.available_models, input_string)
 
 
 def get_models_count(driver: WebDriver) -> int:
@@ -62,9 +65,9 @@ def get_all_models(
         model_data: dict[str, str | int | None] = {}
 
         model_name: str = model.find_element(By.TAG_NAME, "h5").text
-        model_data["audience_model"] = AUDIENCE_MODEL
+        model_data["audience_model"] = model_name
         model_data["make"] = MAKE
-        model_data["model"] = model_name
+        model_data["model"] = extract_model_from_string(models, input_string=model_name)
         model_data["trim"] = extract_trim_from_string(styles, input_string=model_name)
         model_data["year"] = extract_year_from_string(years, input_string=model_name)
         # Trim = style
