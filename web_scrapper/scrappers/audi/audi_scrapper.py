@@ -1,3 +1,4 @@
+import logging
 import re
 from typing import Iterable
 
@@ -6,11 +7,17 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from web_scrapper.scrappers.audi.extractor_agent.offer_extractor_agent import \
-    extract_offer_info
-from web_scrapper.scrappers.audi.models_library import (BodyStyles, Models,
-                                                        Offer, OfferSettings,
-                                                        Years, build_data)
+from web_scrapper.scrappers.audi.extractor_agent.offer_extractor_agent import (
+    extract_offer_info,
+)
+from web_scrapper.scrappers.audi.models_library import (
+    BodyStyles,
+    Models,
+    Offer,
+    OfferSettings,
+    Years,
+    build_data,
+)
 from web_scrapper.scrappers.audi.utils import close_cookie_banner
 from web_scrapper.settings import AUDI_URL
 
@@ -25,15 +32,15 @@ def get_offer_types(
         finance_offers = main_content.find_element(
             By.CSS_SELECTOR, 'section[data-offer="APR"]'
         ).find_elements(By.TAG_NAME, "article")
-    except Exception as e:
-        pass
+    except Exception:
+        logging.info("No finance offers found")
 
     try:
         promotion_offers = main_content.find_element(
             By.CSS_SELECTOR, 'section[data-offer="PROMOTION"]'
         ).find_elements(By.TAG_NAME, "article")
-    except Exception as e:
-        pass
+    except Exception:
+        logging.info("No promotion offers found")
 
     return finance_offers, promotion_offers
 
@@ -114,11 +121,14 @@ def get_all_offers(
 ) -> list[Offer]:
     all_models: list[WebElement] = get_all_models(driver)
 
-    assert len(all_models) == expected_models_count
+    assert (
+        len(all_models) == expected_models_count
+    ), "Did not find the correct number of models"
 
     offers_data: list[Offer] = []
     for model_idx in range(3):  # range(expected_models_count):
         model_name: str = all_models[model_idx].find_element(By.TAG_NAME, "h5").text
+        logging.info(f"Getting all offers for: {model_name}")
 
         offer: Offer = Offer(
             audience_model=model_name,
@@ -127,9 +137,7 @@ def get_all_offers(
             year=extract_year_from_string(years, input_string=model_name),
         )
 
-        extracted_offers: list[OfferSettings] = get_offers(
-            all_models[model_idx], driver
-        )
+        extracted_offers: list[OfferSettings] = get_offers(all_models[model_idx], driver)
 
         for extracted_offer in extracted_offers:
             new_offer: Offer = offer.model_copy()
@@ -140,24 +148,24 @@ def get_all_offers(
         # Refresh all models
         all_models = get_all_models(driver)
 
-        assert len(all_models) == expected_models_count
-
+        assert (
+            len(all_models) == expected_models_count
+        ), "Did not find the correct number of models"
         close_cookie_banner(driver)
 
     return offers_data
 
 
 def scrape_audi(driver: WebDriver, url: str = AUDI_URL) -> list[Offer]:
+    logging.info("Loading ENV variables")
     load_dotenv()
     driver.get(url)
     close_cookie_banner(driver)
-    years: Years
-    styles: BodyStyles
-    models: Models
     years, styles, models = build_data(driver)
     offers: list[Offer] = get_all_offers(
         driver, years, styles, models, get_models_count(driver)
     )
+    logging.info("Quitting Driver")
     driver.quit()
 
     return offers

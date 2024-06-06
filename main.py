@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 
 from web_scrapper.scrappers.audi.audi_scrapper import scrape_audi
@@ -12,6 +13,8 @@ def save_data(
     dict_list: list[dict] = [obj.model_dump() for obj in offers]
     with open(output_file, "w") as file:
         json.dump(dict_list, file, indent=4, default=str)
+
+    logging.info(f"Extracted Offers saved to: {output_file}")
 
 
 def main() -> None:

@@ -28,6 +28,16 @@ mypy = "^1.10.0"
 flake8 = "^7.0.0"
 isort = "^5.13.2"
 
+
+[tool.black]
+line-length = 89
+
+
+[tool.isort]
+profile = "black"
+line_length = 89
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

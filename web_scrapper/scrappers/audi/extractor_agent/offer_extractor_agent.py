@@ -1,16 +1,18 @@
 import json
+import logging
 
-from langchain.prompts.chat import (ChatPromptTemplate,
-                                    HumanMessagePromptTemplate)
+from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import BaseMessage, SystemMessage
 from langchain_community.callbacks import get_openai_callback
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 
 from web_scrapper.scrappers.audi.extractor_agent.prompts import (
-    human_message_prompt_template_string, system_message_string)
+    human_message_prompt_template_string,
+    system_message_string,
+)
 from web_scrapper.scrappers.audi.models_library import OfferSettings
-from web_scrapper.settings import LLM_MODEL_NAME
+from web_scrapper.settings import DEBUG, LLM_MODEL_NAME
 
 
 class OfferExtractionInput(BaseModel):
@@ -52,6 +54,11 @@ class OfferExtractor:
 
             self.update_cumulative_cost(cb.total_cost)
 
+            if DEBUG:
+                logging.debug(
+                    f"Cost for extraction of current offer: ${cb.total_cost} USD"
+                )
+
             extracted_offer: OfferSettings = OfferSettings(**json.loads(output.content))
             extracted_offer.full_offer = offer_input.offer
         return extracted_offer
@@ -73,5 +80,15 @@ def extract_offer_info(
     offer_input: OfferExtractionInput = OfferExtractionInput(
         offer=offer, offer_type=offer_type.split("_")[0]
     )
+    logging.info(
+        "BEFORE OPENAI cumulative cost of extraction so far: ",
+        f"${offer_extractor.total_cumulative_cost_of_usage} USD",
+    )
+    offer_settings: OfferSettings = offer_extractor.extract(offer_input)
 
-    return offer_extractor.extract(offer_input)
+    logging.info(
+        "AFTER OPENAI cumulative cost of extraction so far: ",
+        f"${offer_extractor.total_cumulative_cost_of_usage} USD",
+    )
+
+    return offer_settings

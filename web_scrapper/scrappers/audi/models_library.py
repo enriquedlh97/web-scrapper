@@ -1,3 +1,4 @@
+import logging
 from typing import Callable, TypeVar
 
 from pydantic import BaseModel
@@ -77,6 +78,7 @@ def get_models(sidebar: WebElement, div_number: int = 5) -> list[str]:
 
 
 def build_data(driver: WebDriver) -> tuple[Years, BodyStyles, Models]:
+    logging.info("Preparing information for all models, body styles, and years")
     sidebar: WebElement = driver.find_element(By.CLASS_NAME, "facets-container")
 
     years: Years = Years(available_years=set(get_years(sidebar)))
