@@ -1,7 +1,7 @@
 # web-scrapper
 
 ### Installation
-You need python 3.12
+You need `python 3.12`
 
 1. Install `Poetry`
 For Linux, macOS, Windows (WSL) run:
@@ -24,7 +24,7 @@ poetry shell
 poetry shell
 ```
 
-5. Install `chromium-driver`
+5. Install `chromedriver`
 
 6.  Create a `.env` file at the root of the repository and add your OPENAI API KEY
 ```.env
