@@ -10,8 +10,7 @@ from pydantic import BaseModel
 from web_scrapper.scrappers.audi.extractor_agent.prompts import (
     human_message_prompt_template_string, system_message_string)
 from web_scrapper.scrappers.audi.models_library import OfferSettings
-
-LLM_MODEL_NAME: str = "gpt-3.5-turbo-0125"
+from web_scrapper.settings import LLM_MODEL_NAME
 
 
 class OfferExtractionInput(BaseModel):
@@ -23,12 +22,8 @@ class OfferExtractor:
     llm: ChatOpenAI
     system_message_prompt: SystemMessage
     human_message_prompt_template: HumanMessagePromptTemplate
-    max_token_limit: int
     total_cumulative_cost_of_usage: float
-    completion_tokens: int
-    decision_llm: ChatOpenAI | None
-    decision_system_message_prompt: SystemMessage
-    decision_human_message_prompt_template: HumanMessagePromptTemplate
+    temperature: float
 
     def __init__(
         self,

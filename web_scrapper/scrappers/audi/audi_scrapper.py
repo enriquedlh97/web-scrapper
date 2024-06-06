@@ -1,5 +1,5 @@
 import re
-from typing import Final, Iterable
+from typing import Iterable
 
 from dotenv import load_dotenv
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -11,20 +11,13 @@ from web_scrapper.scrappers.audi.extractor_agent.offer_extractor_agent import \
 from web_scrapper.scrappers.audi.models_library import (BodyStyles, Models,
                                                         Offer, OfferSettings,
                                                         Years, build_data)
-from web_scrapper.scrappers.utils import close_cookie_banner
-
-URL: Final[
-    str
-] = "https://www.audigainesville.com/global-incentives-search/index.htm?ddcref=tier1_offers"
+from web_scrapper.scrappers.audi.utils import close_cookie_banner
+from web_scrapper.settings import AUDI_URL
 
 
-def get_offers(model: WebElement, driver: WebDriver) -> list[OfferSettings]:
-    model.find_element(By.XPATH, "a[2]").click()
-    close_cookie_banner(driver)
-    main_content: WebElement = driver.find_element(
-        By.CLASS_NAME, "ddc-wrapper"
-    ).find_element(By.XPATH, "div[2]")
-
+def get_offer_types(
+    main_content: WebElement,
+) -> tuple[list[WebElement], list[WebElement]]:
     finance_offers: list[WebElement] = []
     promotion_offers: list[WebElement] = []
 
@@ -42,9 +35,23 @@ def get_offers(model: WebElement, driver: WebDriver) -> list[OfferSettings]:
     except Exception as e:
         pass
 
+    return finance_offers, promotion_offers
+
+
+def get_offers(model: WebElement, driver: WebDriver) -> list[OfferSettings]:
+    model.find_element(By.XPATH, "a[2]").click()
+    close_cookie_banner(driver)
+    main_content: WebElement = driver.find_element(
+        By.CLASS_NAME, "ddc-wrapper"
+    ).find_element(By.XPATH, "div[2]")
+
+    offer_types: tuple[list[WebElement], list[WebElement]] = get_offer_types(
+        main_content
+    )
+
     offers: dict[str, list[WebElement]] = {
-        "finance_offers": finance_offers,
-        "promotion_offers": promotion_offers,
+        "finance_offers": offer_types[0],
+        "promotion_offers": offer_types[1],
     }
 
     extracted_offers: list[OfferSettings] = []
@@ -140,10 +147,13 @@ def get_all_offers(
     return offers_data
 
 
-def scrape_audi(driver: WebDriver, url: str = URL) -> list[Offer]:
+def scrape_audi(driver: WebDriver, url: str = AUDI_URL) -> list[Offer]:
     load_dotenv()
     driver.get(url)
     close_cookie_banner(driver)
+    years: Years
+    styles: BodyStyles
+    models: Models
     years, styles, models = build_data(driver)
     offers: list[Offer] = get_all_offers(
         driver, years, styles, models, get_models_count(driver)
