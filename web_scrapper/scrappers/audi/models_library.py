@@ -1,4 +1,3 @@
-from datetime import date
 from typing import Callable, TypeVar
 
 from pydantic import BaseModel
@@ -10,20 +9,32 @@ T = TypeVar("T")
 
 
 class OfferSettings(BaseModel):
-    payment: float | None
-    payment_label: str | None
-    term: int | None
-    down_payment: float | None
-    down_payment_label: str | None
-    expiration: date
-    price: str | None
-    disclaimer: str
-    apr: str
-    name: str | None
-    amount: float | None
-    free_text: str | None
-    vin: str | None
-    msrp: float | None
+    payment: float | None = None
+    payment_label: str | None = None
+    term: int | None = None
+    down_payment: float | None = None
+    down_payment_label: str | None = None
+    expiration: str | None = None
+    price: str | None = None
+    disclaimer: str | None = None
+    apr: str | None = None
+    name: str | None = None
+    amount: float | None = None
+    free_text: str | None = None
+    vin: str | None = None
+    msrp: float | None = None
+    full_offer: str | None = None
+
+
+class Offer(BaseModel):
+    audience_model: str
+    make: str = "Audi"
+    model: str | None = None
+    trim: str | None = None
+    year: int | None = None
+    condition: str | None = None
+    type: str | None = None
+    offer_settings: OfferSettings | None = None
 
 
 class Years(BaseModel):

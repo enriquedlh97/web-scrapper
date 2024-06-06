@@ -15,6 +15,10 @@ python = "^3.12"
 selenium = "^4.21.0"
 webdriver-manager = "^4.0.1"
 pydantic = "^2.7.3"
+langchain = "^0.2.2"
+openai = "^1.31.1"
+langchain-community = "^0.2.3"
+langchain-openai = "^0.1.8"
 
 
 [tool.poetry.group.dev.dependencies]
