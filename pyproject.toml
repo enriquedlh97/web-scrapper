@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "web-scrapper"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+
+packages = [
+    { include = "web_scrapper" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+selenium = "^4.21.0"
+webdriver-manager = "^4.0.1"
+pydantic = "^2.7.3"
+langchain = "^0.2.2"
+openai = "^1.31.1"
+langchain-community = "^0.2.3"
+langchain-openai = "^0.1.8"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.7.1"
+black = "^24.4.2"
+mypy = "^1.10.0"
+flake8 = "^7.0.0"
+isort = "^5.13.2"
+
+
+[tool.black]
+line-length = 89
+
+
+[tool.isort]
+profile = "black"
+line_length = 89
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
