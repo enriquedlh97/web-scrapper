@@ -1,5 +1,5 @@
 import re
-from typing import Final
+from typing import Final, Iterable
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -13,20 +13,22 @@ CONDITION: Final[None] = None
 TYPE: Final[None] = None
 
 
-def extract_year_from_string(model: Years, input_string: str) -> int | None:
-    years_pattern: str = '|'.join(map(str, model.available_years))
-    match: re.Match[str] | None = re.search(rf'\b({years_pattern})\b', input_string)
+def extract_pattern_from_string(patterns: Iterable[int | str], input_string: str) -> str | None:
+    patterns_str = "|".join(map(str, patterns))
+    match: re.Match[str] | None = re.search(rf'\b({patterns_str})\b', input_string)
     if match:
-        return int(match.group(1))
+        matched_value: str = match.group(1)
+        return matched_value
     return None
 
 
-def extract_trim_from_string(model: BodyStyles, input_string: str) -> str | None:
-    styles_pattern: str = '|'.join(map(str, model.available_styles))
-    match: re.Match[str] | None = re.search(rf'\b({styles_pattern})\b', input_string)
-    if match:
-        return match.group(1)
-    return None
+def extract_year_from_string(years: Years, input_string: str) -> int | None:
+    year: str | None = extract_pattern_from_string(years.available_years, input_string)
+    return int(year) if (year and year.isdigit()) else None
+
+
+def extract_trim_from_string(styles: BodyStyles, input_string: str) -> str | None:
+    return extract_pattern_from_string(styles.available_styles, input_string)
 
 
 def get_models_count(driver: WebDriver) -> int:
