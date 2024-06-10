@@ -50,7 +50,7 @@ class Models(BaseModel):
     available_models: set[str]
 
 
-def get_li_elements_from_div(sidebar: WebElement, div_number: int):
+def get_li_elements_from_div(sidebar: WebElement, div_number: int) -> list[WebElement]:
     xpath: str = f"div[{div_number}]"
     div_element: WebElement = sidebar.find_element(By.XPATH, xpath)
     ul_element: WebElement = div_element.find_element(By.TAG_NAME, "ul")
@@ -61,7 +61,7 @@ def get_li_elements_from_div(sidebar: WebElement, div_number: int):
 def get_items_from_div(
     sidebar: WebElement, div_number: int, converter: Callable[[str], T]
 ) -> list[T]:
-    li_elements = get_li_elements_from_div(sidebar, div_number)
+    li_elements: list[WebElement] = get_li_elements_from_div(sidebar, div_number)
     return [converter(li.text) for li in li_elements]
 
 

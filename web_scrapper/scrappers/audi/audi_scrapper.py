@@ -28,14 +28,14 @@ def get_offer_types(
     promotion_offers: list[WebElement] = []
 
     try:
-        finance_offers = main_content.find_element(
+        finance_offers: list[WebElement] = main_content.find_element(
             By.CSS_SELECTOR, 'section[data-offer="APR"]'
         ).find_elements(By.TAG_NAME, "article")
     except Exception:
         logging.info("No finance offers found")
 
     try:
-        promotion_offers = main_content.find_element(
+        promotion_offers: list[WebElement] = main_content.find_element(
             By.CSS_SELECTOR, 'section[data-offer="PROMOTION"]'
         ).find_elements(By.TAG_NAME, "article")
     except Exception:

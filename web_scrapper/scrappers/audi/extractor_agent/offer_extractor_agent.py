@@ -56,12 +56,14 @@ class OfferExtractor:
 
             logging.debug(f"Cost for extraction of current offer: ${cb.total_cost} USD")
 
-            extracted_offer: OfferSettings = OfferSettings(**json.loads(output.content))
+            extracted_offer: OfferSettings = OfferSettings(
+                **json.loads(output.content)  # type: ignore
+            )
             extracted_offer.full_offer = offer_input.offer
         return extracted_offer
 
-    def update_cumulative_cost(self, extarction_cost: float) -> None:
-        self.total_cumulative_cost_of_usage += extarction_cost
+    def update_cumulative_cost(self, extraction_cost: float) -> None:
+        self.total_cumulative_cost_of_usage += extraction_cost
 
 
 extractor: OfferExtractor = OfferExtractor(
